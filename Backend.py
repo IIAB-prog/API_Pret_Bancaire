@@ -41,7 +41,6 @@ def predict():
     })
 
 
-
 @app.route('/comment', methods=['POST'])
 def save_comment():
     data = request.get_json(force=True)
@@ -56,6 +55,9 @@ def save_comment():
     repo = os.environ.get("GITHUB_REPO")
     path = "avis.json"
 
+    if not token or not repo:
+        return jsonify({"error": "Token ou repo GitHub manquant"}), 500
+
     api_url = f"https://api.github.com/repos/{repo}/contents/{path}"
 
     headers = {
@@ -68,10 +70,12 @@ def save_comment():
 
     if r.status_code == 200:
         content = r.json()
-        sha = content["sha"]
-        existing_data = json.loads(
-            base64.b64decode(content["content"]).decode("utf-8")
-        )
+        sha = content.get("sha")
+        try:
+            decoded = base64.b64decode(content["content"]).decode("utf-8")
+            existing_data = json.loads(decoded) if decoded.strip() else []
+        except (json.JSONDecodeError, KeyError):
+            existing_data = []
     else:
         sha = None
         existing_data = []
@@ -100,10 +104,8 @@ def save_comment():
     if put_response.status_code in [200, 201]:
         return jsonify({"status": "Commentaire enregistré"})
     else:
-        return jsonify({"error": "Échec de l’enregistrement"}), 500
-
-
-
-
-
-
+        # Retourner la réponse de GitHub pour mieux déboguer
+        return jsonify({
+            "error": "Échec de l’enregistrement",
+            "github_response": put_response.text
+        }), 500
