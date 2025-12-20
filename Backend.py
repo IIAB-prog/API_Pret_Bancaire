@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
 import base64
+import requests
 from datetime import datetime
 import os
 
@@ -100,6 +101,7 @@ def save_comment():
         return jsonify({"status": "Commentaire enregistré"})
     else:
         return jsonify({"error": "Échec de l’enregistrement"}), 500
+
 
 
 
