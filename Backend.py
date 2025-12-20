@@ -2,13 +2,20 @@
 from flask import Flask, request, jsonify
 import joblib
 import pandas as pd
+import base64
+from datetime import datetime
 import os
+
 
 # Charger le modèle
 model = joblib.load("eligibilite_pret_model.pkl")
 
 # Initialiser Flask
 app = Flask(__name__)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
 
 # Route principale
 @app.route('/')
@@ -33,10 +40,6 @@ def predict():
     })
 
 
-import requests
-import base64
-from datetime import datetime
-import os
 
 @app.route('/comment', methods=['POST'])
 def save_comment():
@@ -100,7 +103,4 @@ def save_comment():
 
 
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
 
