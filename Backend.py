@@ -6,7 +6,7 @@ import base64
 import requests
 from datetime import datetime
 import os
-
+import json
 
 # Charger le modèle
 model = joblib.load("eligibilite_pret_model.pkl")
@@ -101,6 +101,7 @@ def save_comment():
         return jsonify({"status": "Commentaire enregistré"})
     else:
         return jsonify({"error": "Échec de l’enregistrement"}), 500
+
 
 
 
